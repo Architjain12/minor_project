@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include<stdlib.h>
-void DCT(int **NM,int column,int row, int **Final_matrix)
+void DCT(int **NM,int row,int column, int **Final_matrix)
 {
     float DCT_matrix[8][8]={{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
     {0.4904,0.4157,0.2778,0.0975,-0.0975,-0.2778,-0.4157,-0.4904},
@@ -252,7 +252,7 @@ printf("\n");printf("\n");*/
     {
         for(int j=0;j<WIDTH_OF_IMAGE;j=j+8)
         {
-            DCT(normalized_matrix,j,i,DCT_Coeff_matrix);
+            DCT(normalized_matrix,i,j,DCT_Coeff_matrix);
         }
     }
 
@@ -369,6 +369,8 @@ printf("\n");printf("\n");*/
         }
         printf("\n");
     }*/
+   
+    printf("hello");
 
 
     return 0;
