@@ -1,14 +1,8 @@
-/******************************************************************************
-
-                            Online C Compiler.
-                Code, Compile, Run and Debug C program online.
-Write your code in this editor and press "Run" button to compile and execute it.
-
-*******************************************************************************/
 
 #include <stdio.h>
 #include <conio.h>
-void DCT(int *NM,int column,int row, int *Final_matrix)
+#include<stdlib.h>
+void DCT(int **NM,int column,int row, int **Final_matrix)
 {
     float DCT_matrix[8][8]={{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
     {0.4904,0.4157,0.2778,0.0975,-0.0975,-0.2778,-0.4157,-0.4904},
@@ -17,7 +11,7 @@ void DCT(int *NM,int column,int row, int *Final_matrix)
     {0.3536,-0.3536,-0.3536,0.3536,0.3536,-0.3536,-0.3536,0.3536},
     {0.2778,-0.4904,0.0975,0.4157,-0.4157,-0.0975,0.4904,-0.2778},
     {0.1913,-0.4619,0.4619,-0.1913,-0.1913,0.4619,-0.4619,0.1913},
-    {0.0975,-0.2778,0.4157,-0.4904,0.4904,-0.4157,0.2778,-0.0975}}
+    {0.0975,-0.2778,0.4157,-0.4904,0.4904,-0.4157,0.2778,-0.0975}};
     
     int i, j, k; 
     int matrix_1[8][8];
@@ -44,7 +38,7 @@ void DCT(int *NM,int column,int row, int *Final_matrix)
         } 
     }
 }
-void new_Quantization(int *Q, int QC)
+void new_Quantization(int **Q, int QC)
 {
     float Q_C;
     if(QC>50)
@@ -59,16 +53,19 @@ void new_Quantization(int *Q, int QC)
     {
         for(int j=0;j<8;j++)
         {
-            Q[i][j]=(int) Q[i][j]*QC
+            Q[i][j]=(int) Q[i][j]*QC;
         }
     }
 }
 int main()
 {
-    int normalized_matrix[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
-    int Decompressed_image[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
-    int DCT_Coeff_matrix[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
-    int Quantization[8][8]={{16,11,10,16,24,40,51,61},
+    int HEIGHT_OF_IMAGE,WIDTH_OF_IMAGE,i,j;
+    HEIGHT_OF_IMAGE=10;
+    WIDTH_OF_IMAGE=10;
+    int normalized_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
+    int Decompressed_image1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
+    int DCT_Coeff_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
+    int Quantization1[8][8]={{16,11,10,16,24,40,51,61},
     {12,12,14,19,26,58,60,55},
     {14,13,16,24,40,57,69,56},
     {14,17,22,29,51,87,80,62},
@@ -76,7 +73,47 @@ int main()
     {24,35,55,64,81,104,113,92},
     {49,64,78,87,103,121,120,101},
     {72,92,95,8,112,100,103,99}};
-    Quantization_coeff=50;
+    int Quantization_coeff=50;
+ 
+    int **normalized_matrix;
+    int **DCT_Coeff_matrix;
+    int **Decompressed_image;
+    int **Quantization;
+    normalized_matrix=(int**)malloc(sizeof(int*)*HEIGHT_OF_IMAGE);
+    for(i=0;i<HEIGHT_OF_IMAGE;i++)
+    {
+            normalized_matrix[i]=(int*)malloc(sizeof(int)*WIDTH_OF_IMAGE);
+     }
+   
+     
+    DCT_Coeff_matrix=(int**)malloc(sizeof(int*)*HEIGHT_OF_IMAGE);
+    for(i=0;i<HEIGHT_OF_IMAGE;i++)
+    {
+            DCT_Coeff_matrix[i]=(int*)malloc(sizeof(int)*WIDTH_OF_IMAGE);
+     }
+
+
+    Decompressed_image=(int**)malloc(sizeof(int*)*HEIGHT_OF_IMAGE);
+    for(i=0;i<HEIGHT_OF_IMAGE;i++)
+    {
+            Decompressed_image[i]=(int*)malloc(sizeof(int)*WIDTH_OF_IMAGE);
+     }
+
+     
+    Quantization=(int**)malloc(sizeof(int*)*8);
+    for(i=0;i<HEIGHT_OF_IMAGE;i++)
+    {
+           Quantization[i]=(int*)malloc(sizeof(int)*8);
+    }
+
+    for(int i=0;i<8;i++)
+    {
+        for(int j=0;j<8;j++)
+        {
+           Quantization[i][j]=Quantization1[i][j];
+        }
+    }
+    
     if(Quantization_coeff!=50)
     {
         new_Quantization(Quantization, Quantization_coeff);
@@ -85,7 +122,10 @@ int main()
     {
         for(int j=0;j<HEIGHT_OF_IMAGE;j++)
         {
-            normalized_matrix[i][j]=matrix[i][j]-128;
+              //matrix[i][j] ?
+             //origina line ---->normalized_matrix[i][j]= matrix[i][j]-128; 
+             //random line added for now 
+            normalized_matrix[i][j]= normalized_matrix[i][j]-128;
         }
     }
     
@@ -105,7 +145,13 @@ int main()
         }
     }
     
-    
+   
+
+
+
+
+
+ 
     
     //Decompress
     for(int i=0;i<WIDTH_OF_IMAGE;i++)
@@ -120,7 +166,10 @@ int main()
     {
         for(int j=0;j<HEIGHT_OF_IMAGE;j=j+8)
         {
-            DCT_reverse(DCT_Coeff_matrix,i,j,normalized_matrix);
+             //function DCT_reverse was never defiend
+            //DCT_reverse(DCT_Coeff_matrix,i,j,normalized_matrix);
+            //random line added for now
+            DCT(DCT_Coeff_matrix,i,j,normalized_matrix);
         }
     }
     
@@ -134,8 +183,8 @@ int main()
     return 0;
 }
 
-
-void DCT(int *DC,int column,int row, int *Final_matrix)
+/*
+void DCT(int **DC,int column,int row, int **Final_matrix)
 {
     float DCT_matrix[8][8]={{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
     {0.4904,0.4157,0.2778,0.0975,-0.0975,-0.2778,-0.4157,-0.4904},
@@ -171,3 +220,4 @@ void DCT(int *DC,int column,int row, int *Final_matrix)
         } 
     }
 }
+*/
