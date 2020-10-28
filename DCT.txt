@@ -53,15 +53,25 @@ void new_Quantization(int **Q, int QC)
     {
         for(int j=0;j<8;j++)
         {
-            Q[i][j]=(int) Q[i][j]*QC;
+            Q[i][j]=(int) Q[i][j]*Q_C;
         }
     }
 }
 int main()
 {
     int HEIGHT_OF_IMAGE,WIDTH_OF_IMAGE,i,j;
-    HEIGHT_OF_IMAGE=10;
-    WIDTH_OF_IMAGE=10;
+    HEIGHT_OF_IMAGE=8;
+    WIDTH_OF_IMAGE=8;
+    //Sample image value
+    int Image[8][8]={{16,11,10,16,24,40,51,61},
+    {12,12,14,19,26,58,60,55},
+    {14,13,16,24,40,57,69,56},
+    {14,17,22,29,51,87,80,62},
+    {18,22,37,56,68,109,103,77},
+    {24,35,55,64,81,104,113,92},
+    {49,64,78,87,103,121,120,101},
+    {72,92,95,8,112,100,103,99}};
+    
     int normalized_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
     int Decompressed_image1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
     int DCT_Coeff_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
@@ -74,7 +84,7 @@ int main()
     {49,64,78,87,103,121,120,101},
     {72,92,95,8,112,100,103,99}};
     int Quantization_coeff=50;
- 
+    
     int **normalized_matrix;
     int **DCT_Coeff_matrix;
     int **Decompressed_image;
@@ -122,10 +132,7 @@ int main()
     {
         for(int j=0;j<HEIGHT_OF_IMAGE;j++)
         {
-              //matrix[i][j] ?
-             //origina line ---->normalized_matrix[i][j]= matrix[i][j]-128; 
-             //random line added for now 
-            normalized_matrix[i][j]= normalized_matrix[i][j]-128;
+             normalized_matrix[i][j]= Image[i][j]-128; 
         }
     }
     
@@ -143,6 +150,15 @@ int main()
         {
             DCT_Coeff_matrix[i][j]=(int) DCT_Coeff_matrix[i][j]/Quantization[i%8][j%8];
         }
+    }
+    
+    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    {
+        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        {
+            printf("%d ",DCT_Coeff_matrix[i][j]);
+        }
+        printf("\n");
     }
     
    
