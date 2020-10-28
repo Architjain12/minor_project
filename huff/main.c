@@ -2,7 +2,7 @@
 // Image Compression
 #include <stdio.h>
 #include <stdlib.h>
-
+#include<string.h>
 // function to calculate word length
 int codelen(char* code)
 {
@@ -45,7 +45,7 @@ int main()
 	char filename[] = "LAND.bmp";
 	int data = 0, offset, bpp = 0, width, height;
 	long bmpsize = 0, bmpdataoff = 0;
-	int** image;
+	int** image,***img;
 	int temp = 0;
 
 	// Reading the BMP File
@@ -112,6 +112,7 @@ int main()
 			image[i] = (int*)malloc(width * sizeof(int));
 		}
 
+
 		// int image[height][width]
 		// can also be done
 		// Number of bytes in
@@ -124,12 +125,21 @@ int main()
 		{
 			for (j = 0; j < width; j++)
 			{
-				fread(&temp, 3, 1, image_file);
-
-				// the Image is a
+			                    unsigned char x,y,z;
+				//fread(&temp, 3, 1, image_file);
+				fread(&x, 1, 1, image_file);
+				fread(&y, 1, 1, image_file);
+				fread(&y, 1, 1, image_file);
+				int red,green,blue;
+				red=x;green=y;blue=z;
+			                    // the Image is a
 				// 24-bit BMP Image
-				temp = temp & 0x0000FF;
-				image[i][j] = temp;
+				   int gray;
+                //gray  =red* 0.3 + green* 0.59 + blue * 0.11;
+                gray  =red* 0.3 + green* 0.59 + blue * 0.11;
+
+				 //gray=(red+green+blue) /3;
+                image[i][j] = gray;
 			}
 		}
 	}
@@ -348,12 +358,12 @@ int main()
         itoa(height,temp1,10);
         strcat(temp1," ");
         fprintf(table,"%s",temp1);
-        printf("%s",temp1);
+        //printf("%s",temp1);
         //entering width in the table
         itoa(width,temp1,10);
         strcat(temp1," ");
         fprintf(table,"%s",temp1);
-        printf("%s",temp1);
+        //printf("%s",temp1);
         //Entering max code length in table
         itoa(maxcodelen,result,10);
         strcat(result," ");
@@ -372,13 +382,5 @@ int main()
             fprintf(table,"%s",result);
         }
         fclose(table);
-    // Printing Huffman Codes
-    printf("Huffmann Codes::\n\n");
-    printf("pixel values ->   Code\n\n");
-    for (i = 0; i < nodes; i++) {
-       // if (snprintf(NULL, 0, "%d", pix_freq[i].pix) == 2)
-       //     printf("     %d      -> %s\n", pix_freq[i].pix, pix_freq[i].code);
-        //else
-            printf("    %d      -> %s\n", pix_freq[i].pix, pix_freq[i].code);
-    }
+
 }
