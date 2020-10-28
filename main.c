@@ -58,18 +58,114 @@ void new_Quantization(int **Q, int QC)
 }
 int main()
 {
-    int HEIGHT_OF_IMAGE,WIDTH_OF_IMAGE,i,j;
-    HEIGHT_OF_IMAGE=8;
-    WIDTH_OF_IMAGE=8;
+	int i, j;
+	char filename[] = "LAND.bmp";
+	int data = 0, offset, bpp = 0, width, height;
+	long bmpsize = 0, bmpdataoff = 0;
+	int** image,***img;
+	int temp = 0;
+
+	// Reading the BMP File
+	FILE* image_file;
+
+	image_file = fopen(filename, "rb");
+	if (image_file == NULL)
+	{
+		printf("Error Opening File!!");
+		exit(1);
+	}
+	else
+	{
+
+		// Set file position of the
+		// stream to the beginning
+		// Contains file signature
+		// or ID "BM"
+		offset = 0;
+
+		// Set offset to 2, which
+		// contains size of BMP File
+		offset = 2;
+
+		fseek(image_file, offset, SEEK_SET);
+
+		// Getting size of BMP File
+		fread(&bmpsize, 4, 1, image_file);
+
+		// Getting offset where the
+		// pixel array starts
+		// Since the information is
+		// at offset 10 from the start,
+		// as given in BMP Header
+		offset = 10;
+
+		fseek(image_file, offset, SEEK_SET);
+
+		// Bitmap data offset
+		fread(&bmpdataoff, 4, 1, image_file);
+
+		// Getting height and width of the image
+		// Width is stored at offset 18 and
+		// height at offset 22, each of 4 bytes
+		fseek(image_file, 18, SEEK_SET);
+
+		fread(&width, 4, 1, image_file);
+
+		fread(&height, 4, 1, image_file);
+
+		// Number of bits per pixel
+		fseek(image_file, 2, SEEK_CUR);
+
+		fread(&bpp, 2, 1, image_file);
+
+		// Setting offset to start of pixel data
+		fseek(image_file, bmpdataoff, SEEK_SET);
+
+		// Creating Image array
+		image = (int**)malloc(height * sizeof(int*));
+
+		for (i = 0; i < height; i++)
+		{
+			image[i] = (int*)malloc(width * sizeof(int));
+		}
+
+
+		// int image[height][width]
+		// can also be done
+		// Number of bytes in
+		// the Image pixel array
+		int numbytes = (bmpsize - bmpdataoff) / 3;
+
+		// Reading the BMP File
+		// into Image Array
+		for (i = 0; i < height; i++)
+		{
+			for (j = 0; j < width; j++)
+			{
+                unsigned char x,y,z;
+				//fread(&temp, 3, 1, image_file);
+				fread(&x, 1, 1, image_file);
+				fread(&y, 1, 1, image_file);
+				fread(&y, 1, 1, image_file);
+				int red,green,blue;
+				red=x;green=y;blue=z;
+			                    // the Image is a
+				// 24-bit BMP Image
+				   int gray;
+                //gray  =red* 0.3 + green* 0.59 + blue * 0.11;
+                gray  =red* 0.3 + green* 0.59 + blue * 0.11;
+
+				 //gray=(red+green+blue) /3;
+                image[i][j] = gray;
+			}
+		}
+	}
+
+    int HEIGHT_OF_IMAGE,WIDTH_OF_IMAGE;
+    HEIGHT_OF_IMAGE=height;
+    WIDTH_OF_IMAGE=width;
     //Sample image value
-    int Image[8][8]={{154,123,123,123,123,123,123,136},
-    {192,180,136,154,154,154,136,110},
-    {254,198,154,154,180,154,123,123},
-    {239,180,136,180,180,166,123,123},
-    {180,154,136,167,166,149,136,136},
-    {128,136,123,136,154,180,198,154},
-    {123,105,110,149,136,136,180,166},
-    {110,136,123,123,123,136,154,136}};
+
 
     //int normalized_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
     //int Decompressed_image1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
@@ -110,7 +206,7 @@ int main()
 
 
     Quantization=(int**)malloc(sizeof(int*)*8);
-    for(i=0;i<HEIGHT_OF_IMAGE;i++)
+    for(i=0;i<8;i++)
     {
            Quantization[i]=(int*)malloc(sizeof(int)*8);
     }
@@ -127,56 +223,56 @@ int main()
     {
         new_Quantization(Quantization, Quantization_coeff);
     }
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
-             normalized_matrix[i][j]= Image[i][j]-128;
+             normalized_matrix[i][j]= image[i][j]-128;
         }
     }
 
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    /*for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
             printf("%d ",normalized_matrix[i][j]);
         }
         printf("\n");
     }
-printf("\n");printf("\n");
-    for(int i=0;i<WIDTH_OF_IMAGE;i=i+8)
+printf("\n");printf("\n");*/
+    for(int i=0;i<HEIGHT_OF_IMAGE;i=i+8)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j=j+8)
+        for(int j=0;j<WIDTH_OF_IMAGE;j=j+8)
         {
             DCT(normalized_matrix,i,j,DCT_Coeff_matrix);
         }
     }
 
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    /*for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
             printf("%d ",DCT_Coeff_matrix[i][j]);
         }
         printf("\n");
     }
-printf("\n");printf("\n");
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+printf("\n");printf("\n");*/
+    for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
             DCT_Coeff_matrix[i][j]=(int) DCT_Coeff_matrix[i][j]/Quantization[i%8][j%8];
         }
     }
 
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    /*for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
             printf("%d ",DCT_Coeff_matrix[i][j]);
         }
         printf("\n");
-    }
+    }*/
 
 
 
@@ -221,18 +317,18 @@ printf("\n");printf("\n");
 
 
 
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
             DCT_Coeff_matrix[i][j]=DCT_Coeff_matrix[i][j]*Quantization[i%8][j%8];
         }
     }
 
 
-    for(int i=0;i<WIDTH_OF_IMAGE;i=i+8)
+    for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j=j+8)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
              //function DCT_reverse was never defiend
             DCT_reverse(DCT_Coeff_matrix,i,j,normalized_matrix);
@@ -241,22 +337,22 @@ printf("\n");printf("\n");
         }
     }
 
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
             Decompressed_image[i][j]=normalized_matrix[i][j]+128;
         }
     }
 
-    for(int i=0;i<WIDTH_OF_IMAGE;i++)
+    /*for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
-        for(int j=0;j<HEIGHT_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
             printf("%d ",Decompressed_image[i][j]);
         }
         printf("\n");
-    }
+    }*/
     return 0;
 }
 
