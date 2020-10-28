@@ -1,3 +1,4 @@
+  
 #include <stdio.h>
 #include <conio.h>
 #include<stdlib.h>
@@ -22,7 +23,7 @@ void DCT(int **NM,int column,int row, int **Final_matrix)
             for (k = row; k < row+8; k++)
             {
                 matrix_1[i%8][j%8] += DCT_matrix[i%8][k%8]*NM[k][j];
-            }
+             }
         }
     }
     for(i = row; i < row+8; i++)
@@ -142,7 +143,7 @@ int main()
 		{
 			for (j = 0; j < width; j++)
 			{
-                unsigned char x,y,z;
+                                                                               unsigned char x,y,z;
 				//fread(&temp, 3, 1, image_file);
 				fread(&x, 1, 1, image_file);
 				fread(&y, 1, 1, image_file);
@@ -151,12 +152,12 @@ int main()
 				red=x;green=y;blue=z;
 			                    // the Image is a
 				// 24-bit BMP Image
-				   int gray;
-                //gray  =red* 0.3 + green* 0.59 + blue * 0.11;
-                gray  =red* 0.3 + green* 0.59 + blue * 0.11;
+				int gray;
+                                                                              //gray  =red* 0.3 + green* 0.59 + blue * 0.11;
+                                                                              gray  =red* 0.3 + green* 0.59 + blue * 0.11;
 
-				 //gray=(red+green+blue) /3;
-                image[i][j] = gray;
+				//gray=(red+green+blue) /3;
+                                                                              image[i][j] = gray;
 			}
 		}
 	}
@@ -165,7 +166,8 @@ int main()
     HEIGHT_OF_IMAGE=height;
     WIDTH_OF_IMAGE=width;
     //Sample image value
-
+   
+  
 
     //int normalized_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
     //int Decompressed_image1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
@@ -184,6 +186,7 @@ int main()
     int **DCT_Coeff_matrix;
     int **Decompressed_image;
     int **Quantization;
+
     normalized_matrix=(int**)malloc(sizeof(int*)*HEIGHT_OF_IMAGE);
     for(i=0;i<HEIGHT_OF_IMAGE;i++)
     {
@@ -219,10 +222,12 @@ int main()
         }
     }
 
+
     if(Quantization_coeff!=50)
     {
         new_Quantization(Quantization, Quantization_coeff);
     }
+
     for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
         for(int j=0;j<WIDTH_OF_IMAGE;j++)
@@ -240,11 +245,14 @@ int main()
         printf("\n");
     }
 printf("\n");printf("\n");*/
+
+
+
     for(int i=0;i<HEIGHT_OF_IMAGE;i=i+8)
     {
         for(int j=0;j<WIDTH_OF_IMAGE;j=j+8)
         {
-            DCT(normalized_matrix,i,j,DCT_Coeff_matrix);
+            DCT(normalized_matrix,j,i,DCT_Coeff_matrix);
         }
     }
 
@@ -257,6 +265,9 @@ printf("\n");printf("\n");*/
         printf("\n");
     }
 printf("\n");printf("\n");*/
+
+       
+    
     for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
         for(int j=0;j<WIDTH_OF_IMAGE;j++)
@@ -278,7 +289,7 @@ printf("\n");printf("\n");*/
 
     //DECOMPRESS
 
-    void DCT_reverse(int **NM,int column,int row, int **Final_matrix)
+    void DCT_reverse(int **NM,int row,int column, int **Final_matrix)
 {
     float DCT_matrix[8][8]={{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
     {0.4904,0.4157,0.2778,0.0975,-0.0975,-0.2778,-0.4157,-0.4904},
@@ -302,6 +313,8 @@ printf("\n");printf("\n");*/
             }
         }
     }
+    
+ 
     for(i = row; i < row+8; i++)
     {
         for (j = column; j < column+8; j++)
@@ -326,9 +339,10 @@ printf("\n");printf("\n");*/
     }
 
 
-    for(int i=0;i<HEIGHT_OF_IMAGE;i++)
+
+    for(int i=0;i<HEIGHT_OF_IMAGE;i=i+8)
     {
-        for(int j=0;j<WIDTH_OF_IMAGE;j++)
+        for(int j=0;j<WIDTH_OF_IMAGE;j=j+8)
         {
              //function DCT_reverse was never defiend
             DCT_reverse(DCT_Coeff_matrix,i,j,normalized_matrix);
@@ -336,6 +350,8 @@ printf("\n");printf("\n");*/
             //DCT(DCT_Coeff_matrix,i,j,Decompressed_image);
         }
     }
+    
+
 
     for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
@@ -353,6 +369,7 @@ printf("\n");printf("\n");*/
         }
         printf("\n");
     }*/
+
+
     return 0;
 }
-
