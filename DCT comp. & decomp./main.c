@@ -144,7 +144,7 @@ printf("IT is working!!!");
 int main()
 {
 	int i, j;
-	char filename[] = "LAND.bmp";
+	char filename[] = "sample4.bmp";
 	int data = 0, offset, bpp = 0, width, height;
 	long bmpsize = 0, bmpdataoff = 0;
 	int** image,***img;
@@ -231,7 +231,7 @@ int main()
 				//fread(&temp, 3, 1, image_file);
 				fread(&x, 1, 1, image_file);
 				fread(&y, 1, 1, image_file);
-				fread(&y, 1, 1, image_file);
+				fread(&z, 1, 1, image_file);
 				int red,green,blue;
 				red=x;green=y;blue=z;
 			                    // the Image is a
@@ -466,12 +466,12 @@ img1[i][j]=(unsigned char*)malloc(3*sizeof(unsigned char));
 for(i=0;i<HEIGHT_OF_IMAGE;i++){
     for(j=0;j<WIDTH_OF_IMAGE;j++){
         int red=Decompressed_image[i][j]*(10/3);
-        int green=Decompressed_image[i][j]*(100/58);
+        int green=Decompressed_image[i][j]*(100/59);
         int blue=Decompressed_image[i][j]*(100/11);
 
-        img1[i][j][0]=red;
-        img1[i][j][1]=green;
-        img1[i][j][2]=blue;
+        img1[i][j][0]=Decompressed_image[i][j];
+        img1[i][j][1]=Decompressed_image[i][j];
+        img1[i][j][2]=Decompressed_image[i][j];
     }
 }
 unsigned char* A = (unsigned char*)malloc(HEIGHT_OF_IMAGE * WIDTH_OF_IMAGE * 3 * sizeof(unsigned char));
@@ -480,7 +480,7 @@ for (int i = 0; i < HEIGHT_OF_IMAGE; i++)
             for (int k = 0; k < 3; k++)
                 *(A + i*WIDTH_OF_IMAGE*3 + j*3 + k) = img1[i][j][k];
 
-char* imageFileName = (char*) "bitmapImage.bmp";
+char* imageFileName = (char*) "bitmapImage12.bmp";
 generateBitmapImage(A, HEIGHT_OF_IMAGE, WIDTH_OF_IMAGE, imageFileName);
 
     printf("hello");
