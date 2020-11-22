@@ -37,6 +37,44 @@ void DCT(int **NM,int row,int column, int **Final_matrix)
         }
     }
 }
+    void DCT_reverse(int **NM,int row,int column, int **Final_matrix)
+{
+    float DCT_matrix[8][8]={{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
+    {0.4904,0.4157,0.2778,0.0975,-0.0975,-0.2778,-0.4157,-0.4904},
+    {0.4619,0.1913,-0.1913,-0.4619,-0.4619,-0.1913,0.1913,0.4619},
+    {0.4157,-0.0975,-0.4904,-0.2778,0.2778,0.4904,0.0975,-0.4157},
+    {0.3536,-0.3536,-0.3536,0.3536,0.3536,-0.3536,-0.3536,0.3536},
+    {0.2778,-0.4904,0.0975,0.4157,-0.4157,-0.0975,0.4904,-0.2778},
+    {0.1913,-0.4619,0.4619,-0.1913,-0.1913,0.4619,-0.4619,0.1913},
+    {0.0975,-0.2778,0.4157,-0.4904,0.4904,-0.4157,0.2778,-0.0975}};
+
+    int i, j, k;
+    int matrix_1[8][8];
+    for(i = row; i < row+8; i++)
+    {
+        for (j = column; j < column+8; j++)
+        {
+            matrix_1[i%8][j%8] = 0;
+            for (k = row; k < row+8; k++)
+            {
+                matrix_1[i%8][j%8] += DCT_matrix[k%8][i%8]*NM[k][j];
+            }
+        }
+    }
+
+
+    for(i = row; i < row+8; i++)
+    {
+        for (j = column; j < column+8; j++)
+        {
+            Final_matrix[i][j] = 0;
+            for (k = row; k < row+8; k++)
+            {
+                Final_matrix[i][j] += matrix_1[i%8][k%8]*DCT_matrix[k%8][j%8];
+            }
+        }
+    }
+}
 
 
 void new_Quantization(int **Q, int QC)
@@ -44,17 +82,20 @@ void new_Quantization(int **Q, int QC)
     float Q_C;
     if(QC>50)
     {
-        Q_C=(100-QC)/50;   //less compression
+        Q_C=(float)(100-QC)/50;   //less compression
     }
     else
     {
-        Q_C=QC/50;         //more compression
+        Q_C=(float)QC/50;         //more compression
     }
+    printf("hhhhd");
+    printf("%d\n  ",Q_C);
     for(int i=0;i<8;i++)
     {
         for(int j=0;j<8;j++)
         {
             Q[i][j]=(int) Q[i][j]*Q_C;
+            printf("%d ",Q[i][j]);
         }
     }
 }
@@ -143,11 +184,23 @@ printf("IT is working!!!");
 
 int main()
 {
+    int Quantization1[8][8]={{16,11,10,16,24,40,51,61},
+    {12,12,14,19,26,58,60,55},
+    {14,13,16,24,40,57,69,56},
+    {14,17,22,29,51,87,80,62},
+    {18,22,37,56,68,109,103,77},
+    {24,35,55,64,81,104,113,92},
+    {49,64,78,87,103,121,120,101},
+    {72,92,95,8,112,100,103,99}};
+    int Quantization_coeff=10;
 	int i, j;
 	char filename[] = "sample4.bmp";
 	int data = 0, offset, bpp = 0, width, height;
 	long bmpsize = 0, bmpdataoff = 0;
 	int** image,***img;
+	unsigned char ***img1;
+	int HEIGHT_OF_IMAGE,WIDTH_OF_IMAGE;
+	unsigned char ***image_rgb;
 	int temp = 0;
 
 	// Reading the BMP File
@@ -207,12 +260,28 @@ int main()
 		fseek(image_file, bmpdataoff, SEEK_SET);
 
 		// Creating Image array
-		image = (int**)malloc(height * sizeof(int*));
 
-		for (i = 0; i < height; i++)
-		{
-			image[i] = (int*)malloc(width * sizeof(int));
-		}
+    HEIGHT_OF_IMAGE=height;
+    WIDTH_OF_IMAGE=width;
+
+image_rgb=(unsigned char***)malloc(HEIGHT_OF_IMAGE*sizeof(unsigned char**));
+for(i=0;i<HEIGHT_OF_IMAGE;i++)
+{
+image_rgb[i]=(unsigned char**)malloc(WIDTH_OF_IMAGE*sizeof(unsigned char*));
+for(j=0;j<WIDTH_OF_IMAGE;j++){
+image_rgb[i][j]=(unsigned char*)malloc(3*sizeof(unsigned char));
+}
+}
+
+
+img1=(unsigned char***)malloc(HEIGHT_OF_IMAGE*sizeof(unsigned char**));
+for(i=0;i<HEIGHT_OF_IMAGE;i++)
+{
+img1[i]=(unsigned char**)malloc(WIDTH_OF_IMAGE*sizeof(unsigned char*));
+for(j=0;j<WIDTH_OF_IMAGE;j++){
+img1[i][j]=(unsigned char*)malloc(3*sizeof(unsigned char));
+}
+}
 
 
 		// int image[height][width]
@@ -236,19 +305,37 @@ int main()
 				red=x;green=y;blue=z;
 			                    // the Image is a
 				// 24-bit BMP Image
-				int gray;
+				//int gray;
                                                                               //gray  =red* 0.3 + green* 0.59 + blue * 0.11;
-                                                                              gray  =red* 0.3 + green* 0.59 + blue * 0.11;
+                                                                              //gray  =red* 0.3 + green* 0.59 + blue * 0.11;
 
 				//gray=(red+green+blue) /3;
-                                                                              image[i][j] = gray;
+                image_rgb[i][j][0] = red;
+                image_rgb[i][j][1] = green;
+                image_rgb[i][j][2] = blue;
 			}
 		}
 	}
 
-    int HEIGHT_OF_IMAGE,WIDTH_OF_IMAGE;
-    HEIGHT_OF_IMAGE=height;
-    WIDTH_OF_IMAGE=width;
+
+	image = (int**)malloc(height * sizeof(int*));
+    for (i = 0; i < height; i++)
+    {
+        image[i] = (int*)malloc(width * sizeof(int));
+    }
+
+    for(int xyz=0;xyz<3;xyz++)
+    {
+        for (i = 0; i < height; i++)
+		{
+			for (j = 0; j < width; j++)
+			{
+			    image[i][j]=image_rgb[i][j][xyz];
+			}
+		}
+
+
+printf("d");
     //Sample image value
 
 
@@ -256,15 +343,7 @@ int main()
     //int normalized_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
     //int Decompressed_image1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
     //int DCT_Coeff_matrix1[HEIGHT_OF_IMAGE][WIDTH_OF_IMAGE];
-    int Quantization1[8][8]={{16,11,10,16,24,40,51,61},
-    {12,12,14,19,26,58,60,55},
-    {14,13,16,24,40,57,69,56},
-    {14,17,22,29,51,87,80,62},
-    {18,22,37,56,68,109,103,77},
-    {24,35,55,64,81,104,113,92},
-    {49,64,78,87,103,121,120,101},
-    {72,92,95,8,112,100,103,99}};
-    int Quantization_coeff=50;
+
 
     int **normalized_matrix;
     int **DCT_Coeff_matrix;
@@ -306,12 +385,12 @@ int main()
         }
     }
 
-
+//printf("qs");
     if(Quantization_coeff!=50)
     {
         new_Quantization(Quantization, Quantization_coeff);
     }
-
+//printf("qos");
     for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
         for(int j=0;j<WIDTH_OF_IMAGE;j++)
@@ -319,16 +398,16 @@ int main()
              normalized_matrix[i][j]= image[i][j]-128;
         }
     }
-
-    /*for(int i=0;i<HEIGHT_OF_IMAGE;i++)
+printf("\n Quantization");
+    for(int i=0;i<8;i++)
     {
-        for(int j=0;j<WIDTH_OF_IMAGE;j++)
+        for(int j=0;j<8;j++)
         {
-            printf("%d ",normalized_matrix[i][j]);
+            printf("%d ",Quantization[i][j]);
         }
         printf("\n");
     }
-printf("\n");printf("\n");*/
+printf("\n");printf("\n");
 
 
 
@@ -373,54 +452,24 @@ printf("\n");printf("\n");*/
 
     //DECOMPRESS
 
-    void DCT_reverse(int **NM,int row,int column, int **Final_matrix)
-{
-    float DCT_matrix[8][8]={{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
-    {0.4904,0.4157,0.2778,0.0975,-0.0975,-0.2778,-0.4157,-0.4904},
-    {0.4619,0.1913,-0.1913,-0.4619,-0.4619,-0.1913,0.1913,0.4619},
-    {0.4157,-0.0975,-0.4904,-0.2778,0.2778,0.4904,0.0975,-0.4157},
-    {0.3536,-0.3536,-0.3536,0.3536,0.3536,-0.3536,-0.3536,0.3536},
-    {0.2778,-0.4904,0.0975,0.4157,-0.4157,-0.0975,0.4904,-0.2778},
-    {0.1913,-0.4619,0.4619,-0.1913,-0.1913,0.4619,-0.4619,0.1913},
-    {0.0975,-0.2778,0.4157,-0.4904,0.4904,-0.4157,0.2778,-0.0975}};
+printf("\ndecom");
 
-    int i, j, k;
-    int matrix_1[8][8];
-    for(i = row; i < row+8; i++)
-    {
-        for (j = column; j < column+8; j++)
-        {
-            matrix_1[i%8][j%8] = 0;
-            for (k = row; k < row+8; k++)
-            {
-                matrix_1[i%8][j%8] += DCT_matrix[k%8][i%8]*NM[k][j];
-            }
-        }
-    }
-
-
-    for(i = row; i < row+8; i++)
-    {
-        for (j = column; j < column+8; j++)
-        {
-            Final_matrix[i][j] = 0;
-            for (k = row; k < row+8; k++)
-            {
-                Final_matrix[i][j] += matrix_1[i%8][k%8]*DCT_matrix[k%8][j%8];
-            }
-        }
-    }
-}
-
-
-
+printf("HEIGHT_OF_IMAGE=%d",HEIGHT_OF_IMAGE);
+printf("WIDTH_OF_IMAGE=%d",WIDTH_OF_IMAGE);
+int funny,zz=0;
     for(int i=0;i<HEIGHT_OF_IMAGE;i++)
     {
         for(int j=0;j<WIDTH_OF_IMAGE;j++)
         {
+            funny=DCT_Coeff_matrix[i][j];
             DCT_Coeff_matrix[i][j]=DCT_Coeff_matrix[i][j]*Quantization[i%8][j%8];
+            if(funny==DCT_Coeff_matrix[i][j])
+            {
+                zz++;
+            }
         }
     }
+    printf("zz=%d \n",zz);
 
 
 
@@ -453,32 +502,21 @@ printf("\n");printf("\n");*/
         }
         printf("\n");
     }*/
-unsigned char ***img1;
-img1=(unsigned char***)malloc(HEIGHT_OF_IMAGE*sizeof(unsigned char**));
-for(i=0;i<HEIGHT_OF_IMAGE;i++)
-{
-img1[i]=(unsigned char**)malloc(WIDTH_OF_IMAGE*sizeof(unsigned char*));
-for(j=0;j<WIDTH_OF_IMAGE;j++){
-img1[i][j]=(unsigned char*)malloc(3*sizeof(unsigned char));
-}
-}
+printf("%d",xyz);
 
 for(i=0;i<HEIGHT_OF_IMAGE;i++){
     for(j=0;j<WIDTH_OF_IMAGE;j++){
-        int red=Decompressed_image[i][j]*(10/3);
-        int green=Decompressed_image[i][j]*(100/59);
-        int blue=Decompressed_image[i][j]*(100/11);
-
-        img1[i][j][0]=Decompressed_image[i][j];
-        img1[i][j][1]=Decompressed_image[i][j];
-        img1[i][j][2]=Decompressed_image[i][j];
+        img1[i][j][xyz]=Decompressed_image[i][j];
     }
 }
+
+}
+
 unsigned char* A = (unsigned char*)malloc(HEIGHT_OF_IMAGE * WIDTH_OF_IMAGE * 3 * sizeof(unsigned char));
-for (int i = 0; i < HEIGHT_OF_IMAGE; i++)
+for (int k = 0; k < 3; k++)
+    for (int i = 0; i < HEIGHT_OF_IMAGE; i++)
         for (int j = 0; j < WIDTH_OF_IMAGE; j++)
-            for (int k = 0; k < 3; k++)
-                *(A + i*WIDTH_OF_IMAGE*3 + j*3 + k) = img1[i][j][k];
+            *(A + i*WIDTH_OF_IMAGE*3 + j*3 + k) = img1[i][j][k];
 
 char* imageFileName = (char*) "bitmapImage12.bmp";
 generateBitmapImage(A, HEIGHT_OF_IMAGE, WIDTH_OF_IMAGE, imageFileName);
