@@ -517,6 +517,22 @@ for (int k = 0; k < 3; k++)
     for (int i = 0; i < HEIGHT_OF_IMAGE; i++)
         for (int j = 0; j < WIDTH_OF_IMAGE; j++)
             *(A + i*WIDTH_OF_IMAGE*3 + j*3 + k) = img1[i][j][k];
+for (int k = 0; k < 3; k++)
+    for (int i = 0; i < HEIGHT_OF_IMAGE; i++)
+        for (int j = 0; j < WIDTH_OF_IMAGE; j++)
+        {
+            if (i%7==0 || j%7==0)
+            {
+                continue;
+            }
+            else
+            {
+                int vi=i/7;
+                int vj=j/7;
+                *A[i][j][k]=*A[i-vi][j-vj][k];
+            }
+        }
+
 
 char* imageFileName = (char*) "bitmapImage12.bmp";
 generateBitmapImage(A, HEIGHT_OF_IMAGE, WIDTH_OF_IMAGE, imageFileName);
