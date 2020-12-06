@@ -192,7 +192,7 @@ int main()
     {24,35,55,64,81,104,113,92},
     {49,64,78,87,103,121,120,101},
     {72,92,95,8,112,100,103,99}};
-    int Quantization_coeff=10;
+    int Quantization_coeff=60;
 	int i, j;
 	char filename[] = "sample4.bmp";
 	int data = 0, offset, bpp = 0, width, height;
@@ -517,25 +517,64 @@ for (int k = 0; k < 3; k++)
     for (int i = 0; i < HEIGHT_OF_IMAGE; i++)
         for (int j = 0; j < WIDTH_OF_IMAGE; j++)
             *(A + i*WIDTH_OF_IMAGE*3 + j*3 + k) = img1[i][j][k];
+
+int count1=0,count2=0; 		
+count1=(HEIGHT_OF_IMAGE/8);
+count2=(WIDTH_OF_IMAGE/8);
+int row1=0,column1=0;
+int ii=0,jj=0;
+unsigned char* B = (unsigned char*)malloc((HEIGHT_OF_IMAGE-count1) * (WIDTH_OF_IMAGE-count2) * 3 * sizeof(unsigned char));
+
 for (int k = 0; k < 3; k++)
+{
     for (int i = 0; i < HEIGHT_OF_IMAGE; i++)
-        for (int j = 0; j < WIDTH_OF_IMAGE; j++)
+    {
+		
+		for (int j = 0; j < WIDTH_OF_IMAGE; j++)
         {
-            if (i%7==0 || j%7==0)
+            if ((j+1)%8==0)
             {
-                continue;
+				continue;
             }
             else
             {
-                int vi=i/7;
-                int vj=j/7;
-                *A[i][j][k]=*A[i-vi][j-vj][k];
+                int vi=i/8;
+                int vj=j/8;
+                //*A[i][j][k]=*A[i-vi][j-vj][k];
+				//*(A + i*WIDTH_OF_IMAGE*3 + j*3 + k)=*(A + (i-vi)*WIDTH_OF_IMAGE*3 + (j-vj)*3 + k);
+				*(A + (i-vi)*WIDTH_OF_IMAGE*3 + (j-vj)*3 + k)=*(A + i*WIDTH_OF_IMAGE*3 + j*3 + k);
+				if(ii==(HEIGHT_OF_IMAGE-count1)){ continue;}
+				*(B + ii*(WIDTH_OF_IMAGE-count2)*3 + jj*3 + k)=*(A + i*WIDTH_OF_IMAGE*3 + j*3 + k);
+				jj++;
+                 					
+				if(jj==(WIDTH_OF_IMAGE-count2))
+				{
+					jj=0;ii++;
+				}
+				
+				
             }
-        }
+        }	
+	}
+}	
+printf("\n here\n");
+/*
+count1=(HEIGHT_OF_IMAGE/8);
+count2=(WIDTH_OF_IMAGE/8);
+int row1=0,column1=0;
+int ii=0,jj=0;
+unsigned char* B = (unsigned char*)malloc((HEIGHT_OF_IMAGE-count1) * (WIDTH_OF_IMAGE-count2) * 3 * sizeof(unsigned char));
 
-
+for (int k = 0; k < 3; k++)
+    for (int i = 0; i < HEIGHT_OF_IMAGE-count1; i++)
+        for (int j = 0; j < WIDTH_OF_IMAGE-count2; j++)
+		{
+            *(B + i*(WIDTH_OF_IMAGE-count2)*3 + j*3 + k) = *(A + i*(WIDTH_OF_IMAGE-count2)*3 + j*3 + k);
+		}			
+*/			
+			
 char* imageFileName = (char*) "bitmapImage12.bmp";
-generateBitmapImage(A, HEIGHT_OF_IMAGE, WIDTH_OF_IMAGE, imageFileName);
+generateBitmapImage(B,(HEIGHT_OF_IMAGE-count1),(WIDTH_OF_IMAGE-count2), imageFileName);
 
     printf("hello");
 
