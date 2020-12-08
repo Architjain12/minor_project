@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include<stdlib.h>
-//multiplying coefficient_matrix*normalized_image*coefficient_matrix_transpose
+//multiplying DCT_coefficient_matrix=coefficient_matrix*normalized_image*coefficient_matrix_transpose
 void DCT(int **NM,int row,int column, int **Final_matrix)
 {
     float DCT_matrix[8][8]= {{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
@@ -39,7 +39,7 @@ void DCT(int **NM,int row,int column, int **Final_matrix)
         }
     }
 }
-//multiplying coefficient_transpose*normalized_image*coefficient_matrix
+//multiplying normalized_matrix=coefficient_transpose*DCT_coefficient_matrix*coefficient_matrix
 void DCT_reverse(int **NM,int row,int column, int **Final_matrix)
 {
     float DCT_matrix[8][8]= {{0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536,0.3536},
@@ -437,23 +437,18 @@ int main()
 
 //In decompression we perform the operation in reverse
 //we will first multiply the final DCT coefficient matrix by quantization matrix
-        int funny,zz=0;
         for(int i=0; i<HEIGHT_OF_IMAGE; i++)
         {
             for(int j=0; j<WIDTH_OF_IMAGE; j++)
             {
-                funny=DCT_Coeff_matrix[i][j];
                 DCT_Coeff_matrix[i][j]=DCT_Coeff_matrix[i][j]*Quantization[i%8][j%8];
-                if(funny==DCT_Coeff_matrix[i][j])
-                {
-                    zz++;
-                }
+
             }
         }
 
 
 //Here we perform the multiplication operations in reverse
-//we multiply coefficient_transpose*normalized_image*coefficient_matrix
+//we multiply coefficient_transpose*DCT_COEFF_MATRIX*coefficient_matrix
         for(int i=0; i<HEIGHT_OF_IMAGE; i=i+8)
         {
             for(int j=0; j<WIDTH_OF_IMAGE; j=j+8)
