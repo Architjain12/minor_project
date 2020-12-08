@@ -5,7 +5,7 @@
 const int BYTES_PER_PIXEL = 3; /// red, green, & blue
 const int FILE_HEADER_SIZE = 14;
 const int INFO_HEADER_SIZE = 40;
-
+//create file header which contains meta-data of image
 unsigned char* createBitmapFileHeader (int height, int stride)
 {
     int fileSize = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (stride * height);
@@ -27,7 +27,7 @@ unsigned char* createBitmapFileHeader (int height, int stride)
 
     return fileHeader;
 }
-
+//create info header which contains all the information of image
 unsigned char* createBitmapInfoHeader (int height, int width)
 {
     static unsigned char infoHeader[] = {
@@ -58,7 +58,7 @@ unsigned char* createBitmapInfoHeader (int height, int width)
 
     return infoHeader;
 }
-
+//this function uses file header and info header to generate actual image
 void generateBitmapImage (unsigned char* image, int height, int width, char* imageFileName)
 {
     int widthInBytes = width * BYTES_PER_PIXEL;
@@ -113,7 +113,8 @@ struct pix
 
     char code[Code_max_length];
 };
-
+//now we will create our table structure using the table.txt which contains
+//the pixel values along with their codes from Huffman compression
 struct pix* table;
 table = (struct pix*)malloc(sizeof(struct pix) * nodes);
 
@@ -126,13 +127,11 @@ while (fscanf(fp, "%s", ch) == 1)
      if(i%2==0)
      {
           table[k].pix_val= atoi(ch);
-          //printf("pix value %s",ch);printf("\n");
           i++;
      }
      else
     {
           strcpy(table[k++].code,ch);
-          //printf("pix code %s",ch);printf("\n");
           i++;
     }
 
@@ -140,14 +139,12 @@ while (fscanf(fp, "%s", ch) == 1)
 int total_node=k;
 fclose(fp);
 printf("total_node is %d\n",total_node);
-//printf("pix value %s",table[0].code);
-//printf("pix value %s",table[1].code);
 FILE *fp2=fopen("encoded_image.txt","rb");
 //Reading the size of the file
 fseek(fp2,0L,SEEK_END);
 long int file_size=ftell(fp2);
 
-rewind(fp2);
+rewind(fp2);//sets the pointer back to the start of the file.
 
 
 
@@ -161,59 +158,43 @@ for(int i=0;i<size_i;i++)
 }
 printf("%d",size_i);
 char *code_string;
-code_string=(char*)malloc(sizeof(char)*file_size);
+code_string=(char*)malloc(sizeof(char)*file_size);//we are storing all the codes in the file in this character array
 fread(code_string,file_size,1,fp2);
-char bin_sub_string[Code_max_length];
-//for(long int m=0;m<file_size;m++){
-//printf("%c ",code_string[m]);
-//}
+char bin_sub_string[Code_max_length];//This will be the substring that will check if it matches any code in the table
+                                     //then we will pick that pixel value and store it in image array
+
 int s=0;int ss=0;
 int j=0;
 i=0;
 int flag,l;
-
-
-bin_sub_string[0]='0';
-//bin_sub_string[1]=code_string[1];
-bin_sub_string[1]='\0';
-bin_sub_string[1]=code_string[0];
-bin_sub_string[2]='\0';
-//printf(" bin %s\n",bin_sub_string);
-
 while(ss<file_size)
 {
-    //printf("while1");
     bin_sub_string[s]=code_string[ss];
     flag=1;l=0;
     bin_sub_string[s+1]='\0';
     while(flag && l<total_node)
     {
-       //printf("while2");
 
-        if(strcmp(table[l].code,bin_sub_string)==0)
+        if(strcmp(table[l].code,bin_sub_string)==0)//we will compare the codes from table and this substring if they match
+                                                   //we will pick the pixel value and store it in image array
         {
             img[i][j]=table[l].pix_val;
-            //printf("if");
             j++;
             flag=0;
-            if(j==size_j){i++; j=0;}
+            if(j==size_j){i++; j=0;}//we switch to the next row of image array
         }
         l++;
     }
-    if (flag==0){s=0; memset(bin_sub_string,0,Code_max_length);ss++;}
+    if (flag==0){s=0; memset(bin_sub_string,0,Code_max_length);ss++;}//we found one match now to look for another we set
+                                                                     //substring to empty and start matching again
     else{s++;ss++;
-    //printf("%d%d ",s,ss);
     }
 }
 printf("i=%d j=%d\n ",i,j);
 int x,y;
-//for(x=0;x<size_i;x++){
- //   for(y=0;y<size_j;y++)
- //       printf("%d ",img[x][y]);
-//}
-
 fclose(fp2);
-unsigned char ***img1;
+
+unsigned char ***img1;//our final image array
 img1=(unsigned char***)malloc(size_i*sizeof(unsigned char**));
 for(i=0;i<size_i;i++)
 {
@@ -246,6 +227,6 @@ for (int i = 0; i < size_i; i++)
             *(A + i*size_i*3 + j*3 + k) = img1[k][i][j];*/
 
 char* imageFileName = (char*) "bitmapImage.bmp";
-generateBitmapImage(A, size_i, size_j, imageFileName);
+generateBitmapImage(A, size_i, size_j, imageFileName);//create the actual image from image array(img1)
 return 0;
 }
